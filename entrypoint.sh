@@ -76,6 +76,8 @@ DB_USER=${DB_USER:-}
 DB_PASS=${DB_PASS:-}
 DB_POOL=${DB_POOL:-10}
 
+NFS_HOST=${NFS_HOST:-}
+
 SMTP_DOMAIN=${SMTP_DOMAIN:-www.gmail.com}
 SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
 SMTP_PORT=${SMTP_PORT:-587}
@@ -275,6 +277,9 @@ if [[ ${USERMAP_UID} != ${USERMAP_ORIG_UID} ]] || [[ ${USERMAP_GID} != ${USERMAP
   sed -i -e "s/:${USERMAP_ORIG_UID}:${USERMAP_GID}:/:${USERMAP_UID}:${USERMAP_GID}:/" /etc/passwd
   find ${GITLAB_HOME} -path ${GITLAB_DATA_DIR}/\* -prune -o -print0 | xargs -0 chown -h ${GITLAB_USER}:${GITLAB_USER}
 fi
+
+mkdir -p ${GITLAB_DATA_DIR}
+mount -t nfs ${NFS_HOST}:/home/gitlab/data ${GITLAB_DATA_DIR}
 
 if [[ ! -e ${GITLAB_DATA_DIR}/ssh/ssh_host_rsa_key ]]; then
   # create ssh host keys and move them to the data store.
